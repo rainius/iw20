@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">IWeather</string>
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+    <string name="action_add">增加</string>
 </resources>

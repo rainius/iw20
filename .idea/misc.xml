@@ -4,9 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.165" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.165" />
+        <entry key="app/src/main/res/drawable/info_panel_gradient.xml" value="0.125" />
+        <entry key="app/src/main/res/drawable/toolbar_gradient.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.335" />
         <entry key="app/src/main/res/layout/drawer_view.xml" value="0.360054347826087" />
-        <entry key="app/src/main/res/layout/fragment_weather.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_weather.xml" value="0.335" />
         <entry key="app/src/main/res/layout/main_drawer_layer.xml" value="0.335" />
         <entry key="app/src/main/res/layout/main_drawer_layout.xml" value="0.165" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.33177083333333335" />

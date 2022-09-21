@@ -1,12 +1,19 @@
 package com.dmtech.iw.ui;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.dmtech.iw.R;
@@ -79,9 +86,38 @@ public class WeatherFragment extends Fragment {
         //创建绑定对象
         FragmentWeatherBinding binding =
                 FragmentWeatherBinding.inflate(inflater);
-        //TODO: 为文本视图设置内容
-        binding.tvName.setText(mName);
+        //获取asset管理器（AssetManager）对象
+        AssetManager assetManager = getActivity().getAssets();
+        // 从asset中的字体文件创建字体对象
+        Typeface typeface = Typeface.createFromAsset(
+                assetManager,
+                "HelveticaNeue Bold.ttf");
+        //设定字体
+        binding.tvCurTemp.setTypeface(typeface);
+        //空出虚拟按键栏位置
+        int padding = getVirtualBarHeight(getActivity());
+        binding.weatherInfoContainer.setPadding(0, 0, 0, padding);
+
         //返回根视图对象
         return binding.getRoot();
+    }
+
+    // 获取虚拟按键栏高度
+    private int getVirtualBarHeight(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+        int height = dm.heightPixels;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            display.getRealMetrics(dm);
+        }
+        int realHeight = dm.heightPixels;
+        // 计算虚拟按键栏高度
+        int virtualbarHeight = realHeight - height;
+        if (virtualbarHeight < 0) {
+            virtualbarHeight = 0;
+        }
+        return virtualbarHeight;
     }
 }

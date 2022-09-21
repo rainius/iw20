@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--当前气温字号-->
+    <dimen name="cur_temp_text_size">120sp</dimen>
+    <!--其它天气信息字号-->
+    <dimen name="info_text_size">20sp</dimen>
+    <!--更新时间字号-->
+    <dimen name="update_time_text_size">14sp</dimen>
+    <dimen name="tip_content_padding">16dp</dimen>
+    <dimen name="icon_size_32dp">32dp</dimen>
+
+</resources>

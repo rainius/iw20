@@ -15,4 +15,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!--衬底面板填充色-->
+    <color name="colorPanel">#30000000</color>
 </resources>

@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.dmtech.iw.databinding.ActivityMainBinding;
 import com.dmtech.iw.databinding.MainDrawerLayoutBinding;
+import com.dmtech.iw.http.HttpHelper;
 import com.dmtech.iw.ui.WeatherFragment;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -55,11 +56,15 @@ public class MainActivity extends AppCompatActivity {
 
     // 暂时用来产生天气位置的测试方法
     private void fillTestFragments() {
-        mFragments.add(WeatherFragment.newInstance("北京"));
-        mFragments.add(WeatherFragment.newInstance("武汉"));
-        mFragments.add(WeatherFragment.newInstance("巴黎"));
-        mFragments.add(WeatherFragment.newInstance("里约"));
-        mFragments.add(WeatherFragment.newInstance("平壤"));
+//        mFragments.add(WeatherFragment.newInstance("北京"));
+//        mFragments.add(WeatherFragment.newInstance("武汉"));
+//        mFragments.add(WeatherFragment.newInstance("巴黎"));
+//        mFragments.add(WeatherFragment.newInstance("里约"));
+//        mFragments.add(WeatherFragment.newInstance("平壤"));
+        //根据位置ID列表依次创建Fragment
+        for (String locationId : HttpHelper.LOCATION_IDS) {
+            mFragments.add(WeatherFragment.newInstance(locationId));
+        }
         for (WeatherFragment f : mFragments) {
             Log.d("iWeather", "添加位置：" +
                     f.getArguments().getString("name"));
@@ -93,6 +98,14 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mAdapter);
         //注册监听回调
         mViewPager.registerOnPageChangeCallback(mOnPageChangeCallback);
+
+        //验证拼装获取某城市天气数据的API
+        testHttpHelperGetUrl();
+    }
+
+    private void testHttpHelperGetUrl() {
+        String url = HttpHelper.getUrl(HttpHelper.LOCATION_IDS[2]);
+        Log.d("iWeather", "testHttpHelperGetUrl: " + url);
     }
 
     @Override

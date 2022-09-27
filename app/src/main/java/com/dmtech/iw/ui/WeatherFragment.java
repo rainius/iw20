@@ -20,7 +20,10 @@ import android.widget.TextView;
 
 import com.dmtech.iw.R;
 import com.dmtech.iw.databinding.FragmentWeatherBinding;
+import com.dmtech.iw.entity.HeWeather6;
+import com.dmtech.iw.entity.HeWeatherBean;
 import com.dmtech.iw.http.HttpHelper;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -42,9 +45,15 @@ public class WeatherFragment extends Fragment {
 
     //名字属性
     private String mName;
+    //天气对象
+    private HeWeather6 mWeather;
 
     public String getName() {
         return mName;
+    }
+
+    public HeWeather6 getWeather() {
+        return mWeather;
     }
 
     // 缺省构造方法，务必保持为空
@@ -95,9 +104,8 @@ public class WeatherFragment extends Fragment {
         //空出虚拟按键栏位置
         int padding = getVirtualBarHeight(getActivity());
         binding.weatherInfoContainer.setPadding(0, 0, 0, padding);
-
+        //发起网络访问获取天气数据
         requestWeather();
-
         //返回根视图对象
         return binding.getRoot();
     }
@@ -123,11 +131,52 @@ public class WeatherFragment extends Fragment {
 
     //请求本页面的天气数据
     private void requestWeather() {
+        //TODO：在此访问网络获取本页面天气数据
         String locationId = mName;  // 需要取得和风天气地点ID
         Log.d("iWeather", "request weather for: " + locationId);
         // 根据地点ID生成对应的URL
         String url = HttpHelper.getUrl(locationId);
         Log.d("iWeather", "request weather from: " + url);
+        // 创建OkHttp客户端对象
+        OkHttpClient client = new OkHttpClient();
+        // 构建访问url的请求对象
+        Request.Builder builder = new Request.Builder();
+        Request request = builder.url(url).build();
+        //客户端发起请求，并将任务放入异步队列
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                //TODO: 处理失败情况
+                //请求失败，记录日志
+                Log.d("iWeather", "Request failed: " + e.getMessage());
+                //显示失败的详细信息
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                //TODO: 处理响应
+                //请求成功，提取响应回来的内容
+                String result = response.body().string();
+                Log.d("iWeather", "Request OK: " + result);
+                //TODO: 将result转换成 HeWeatherBean 实体对象
+                //创建Gson对象
+                Gson gson = new Gson();
+                //创建HeWeatherBean类型的对象并以实际的天气数据填充
+                HeWeatherBean weatherBean =
+                        gson.fromJson(result, HeWeatherBean.class);
+                //提取天气对象
+                mWeather = weatherBean.getHeWeather6().get(0);
+                //显示当前位置名称
+                Log.d("iWeather", "Weather: " + mWeather.getBasic().getLocation());
+                //显示当前位置的上级行政区
+                Log.d("iWeather", "Weather: " + mWeather.getBasic().getAdmin_area());
+            }
+        });
+    }
+
+            /*
+
         // 创建OkHttp客户端对象
         OkHttpClient client = new OkHttpClient();
         // 构建访问url的请求对象
@@ -148,7 +197,15 @@ public class WeatherFragment extends Fragment {
                 //请求成功，提取响应回来的内容
                 String result = response.body().string();
                 Log.d("iWeather", "Request OK: " + result);
+                //用Gson将JSON串转化为实体对象
+                Gson gson = new Gson();
+                HeWeatherBean weatherBean = gson.fromJson(result, HeWeatherBean.class);
+                //提取天气对象
+                mWeather = weatherBean.getHeWeather6().get(0);
+                Log.d("iWeather", "Weather: " + mWeather.getBasic().getLocation());
+                Log.d("iWeather", "Weather: " + mWeather.getBasic().getAdmin_area());
+
             }
         });
-    }
+        */
 }

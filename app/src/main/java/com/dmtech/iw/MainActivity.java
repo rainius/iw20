@@ -4,21 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.dmtech.iw.databinding.ActivityMainBinding;
 import com.dmtech.iw.databinding.MainDrawerLayoutBinding;
+import com.dmtech.iw.entity.Basic;
+import com.dmtech.iw.entity.HeWeather6;
 import com.dmtech.iw.http.HttpHelper;
 import com.dmtech.iw.ui.WeatherFragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -51,20 +49,27 @@ public class MainActivity extends AppCompatActivity {
                     String title = fragment.getName();
                     //更新工具栏标题
                     mBinding.mainView.mainToolbar.setTitle(title);
+                    /*HeWeather6 weather = fragment.getWeather();
+                    if (weather == null) {
+                        return;
+                    }
+
+                    Basic basic = weather.getBasic();
+                    String title = basic.getLocation();
+                    String subTitile = basic.getAdmin_area() + "，" + basic.getCnty();
+                    //更新工具栏标题
+                    mBinding.mainView.mainToolbar.setTitle(title);
+                    mBinding.mainView.mainToolbar.setSubtitle(subTitile);*/
                 }
             };
 
     // 暂时用来产生天气位置的测试方法
     private void fillTestFragments() {
-//        mFragments.add(WeatherFragment.newInstance("北京"));
-//        mFragments.add(WeatherFragment.newInstance("武汉"));
-//        mFragments.add(WeatherFragment.newInstance("巴黎"));
-//        mFragments.add(WeatherFragment.newInstance("里约"));
-//        mFragments.add(WeatherFragment.newInstance("平壤"));
         //根据位置ID列表依次创建Fragment
         for (String locationId : HttpHelper.LOCATION_IDS) {
             mFragments.add(WeatherFragment.newInstance(locationId));
         }
+
         for (WeatherFragment f : mFragments) {
             Log.d("iWeather", "添加位置：" +
                     f.getArguments().getString("name"));

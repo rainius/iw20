@@ -18,10 +18,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.dmtech.iw.MainActivity;
 import com.dmtech.iw.R;
 import com.dmtech.iw.databinding.FragmentWeatherBinding;
+import com.dmtech.iw.entity.Daily_forecast;
 import com.dmtech.iw.entity.HeWeather6;
 import com.dmtech.iw.entity.HeWeatherBean;
+import com.dmtech.iw.entity.Now;
+import com.dmtech.iw.entity.Update;
 import com.dmtech.iw.http.HttpHelper;
 import com.google.gson.Gson;
 
@@ -40,6 +45,17 @@ import okhttp3.Response;
  */
 public class WeatherFragment extends Fragment {
 
+    // 处理天气数据加载完成
+    public interface OnWeatherLoadedCallback {
+        void onWeatherLoaded();
+    }
+    // 回调对象
+    private OnWeatherLoadedCallback mOnWeatherLoadedCallback;
+    //从外部设定执行回调对象
+    public void setOnWeatherLoadedCallback(OnWeatherLoadedCallback callback) {
+        this.mOnWeatherLoadedCallback = callback;
+    }
+
     //外部传入名字参数的参数名
     private static final String ARG_NAME = "name";
 
@@ -47,6 +63,8 @@ public class WeatherFragment extends Fragment {
     private String mName;
     //天气对象
     private HeWeather6 mWeather;
+    //视图绑定对象
+    FragmentWeatherBinding mBinding;
 
     public String getName() {
         return mName;
@@ -93,6 +111,9 @@ public class WeatherFragment extends Fragment {
         //创建绑定对象
         FragmentWeatherBinding binding =
                 FragmentWeatherBinding.inflate(inflater);
+        //视图绑定属性赋值
+        mBinding = binding;
+
         //获取asset管理器（AssetManager）对象
         AssetManager assetManager = getActivity().getAssets();
         // 从asset中的字体文件创建字体对象
@@ -171,8 +192,61 @@ public class WeatherFragment extends Fragment {
                 Log.d("iWeather", "Weather: " + mWeather.getBasic().getLocation());
                 //显示当前位置的上级行政区
                 Log.d("iWeather", "Weather: " + mWeather.getBasic().getAdmin_area());
+                //将控制权转回UI线程
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mOnWeatherLoadedCallback != null) {
+                            mOnWeatherLoadedCallback.onWeatherLoaded();
+                        }
+                        //TODO: 在此更新UI数据
+                        bindWeatherToViews();
+                    }
+                });
             }
         });
+    }
+
+    // 将mWeather携带的天气信息绑定到对应的视图元素
+    private void bindWeatherToViews() {
+        // 处理意外情况
+        if (mWeather == null) {
+            return;
+        }
+        //绑定文本数据
+        //数据更新时间
+        Update update = mWeather.getUpdate();
+        mBinding.tvUpdateTime.setText(update.getLoc());
+        //当前气温
+        Now now = mWeather.getNow();
+        mBinding.tvCurTemp.setText(now.getTmp() + "°");
+        //当前天气情况
+        mBinding.tvCondition.setText(now.getCond_txt());
+        //今日最高气温
+        //取今日天气预报对象，在每日天气列表第1个
+        Daily_forecast today = mWeather.getDaily_forecast().get(0);
+        mBinding.tvMaxTemp.setText(today.getTmp_max() + "℃");
+        //今日最低气温
+        mBinding.tvMinTemp.setText(today.getTmp_min() + "℃");
+
+        //加载当前天气图标
+        //获得天气代码
+        String conditionCode = now.getCond_code();
+        //生成图标URL
+        String iconUrl = HttpHelper.getIconUrl(conditionCode);
+        //将图标加载到视图
+        Glide.with(this)   //在当前Fragment中加载
+                .load(iconUrl)      //指定图标URL
+                .into(mBinding.icCondition);    //指定展示图标的图片视图
+        //将背景图加载到视图
+        //根据天气码获得背景图URL
+        String bgUrl = HttpHelper.getBackgroundUrl(conditionCode);
+        Glide.with(this)   //在当前Fragment中加载
+                .load(bgUrl)      //指定背景图URL
+                .into(mBinding.ivConditionBg);    //指定背景图片视图
+
+        //简单处理
+
     }
 
             /*

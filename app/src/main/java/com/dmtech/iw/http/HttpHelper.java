@@ -16,6 +16,19 @@ public class HttpHelper {
     // 和风天气KEY
     private static final String API_KEY = "8f33976d35974b88866e05b83993bc04";
 
+    // 天气图标URL模板
+    private static final String ICON_URL_FORMAT = "http://jingzbit.cn/iweather/icons/%s.png";
+
+
+    //定义天气名字
+    private static final String SUNNY = "sunny";    //晴
+    private static final String CLOUDY = "cloudy";  //多云
+    private static final String OVERCAST = "overcast";  //阴
+    private static final String RAINY = "rainy";    //雨
+    private static final String SNOWY = "snowy";    //雪
+    //定义天气背景图URL模板
+    private static final String BG_URL_FORMAT =
+            "http://jingzbit.cn/iweather/background/%s.jpg";
 
 
     /**
@@ -27,5 +40,47 @@ public class HttpHelper {
         String url = String.format(URL_FORMAT, locationId, API_KEY);
         return url;
     }
+
+    /**
+     * 组成天气图标完成URL
+     * @param conditionCode 天气代码
+     * @return 天气图标URL
+     */
+    public static String getIconUrl(String conditionCode) {
+        return String.format(ICON_URL_FORMAT, conditionCode);
+    }
+
+    /**
+     * 根据天气代码获取对应的背景图
+     * @param conditionCode 天气代码
+     * @return 背景图URL
+     */
+    public static String getBackgroundUrl(String conditionCode) {
+        String name = "";
+        //TODO:将天气码映射到天气名字
+        char head = conditionCode.charAt(0);
+        if (head == '1') {  //天气码以1开头，分情况映射
+            switch (conditionCode) {
+                case "100":
+                    name = SUNNY;
+                    break;
+                case "101":
+                case "102":
+                case "103":
+                    name = CLOUDY;
+                    break;
+                case "104":
+                    name = OVERCAST;
+            }
+        } else if (head == '3') {
+            name = RAINY;
+        } else if (head == '4') {
+            name = SNOWY;
+        } else {    //未知情况，简单归为晴天
+            name = SUNNY;
+        }
+        return String.format(BG_URL_FORMAT, name);
+    }
+
 
 }

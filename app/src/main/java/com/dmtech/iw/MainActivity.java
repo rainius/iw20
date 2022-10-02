@@ -24,7 +24,9 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements WeatherFragment.OnWeatherLoadedCallback {
+
     //视图绑定对象
     MainDrawerLayoutBinding mBinding;
     //抽屉按钮对象
@@ -45,21 +47,21 @@ public class MainActivity extends AppCompatActivity {
                     //将Toolbar标题修改为当前Fragment的名字
                     //获取当前页面
                     WeatherFragment fragment = mFragments.get(position);
-                    //获取当前页面名字
-                    String title = fragment.getName();
-                    //更新工具栏标题
-                    mBinding.mainView.mainToolbar.setTitle(title);
-                    /*HeWeather6 weather = fragment.getWeather();
+                    //获取天气对象并确保有效
+                    HeWeather6 weather = fragment.getWeather();
                     if (weather == null) {
                         return;
                     }
-
+                    //取得基本信息对象
                     Basic basic = weather.getBasic();
+                    //已当前具体位置名称为主标题
                     String title = basic.getLocation();
-                    String subTitile = basic.getAdmin_area() + "，" + basic.getCnty();
+                    //已当前位置所述国家、行政区划为主标题
+                    String subTitile =
+                            basic.getAdmin_area() + "，" + basic.getCnty();
                     //更新工具栏标题
                     mBinding.mainView.mainToolbar.setTitle(title);
-                    mBinding.mainView.mainToolbar.setSubtitle(subTitile);*/
+                    mBinding.mainView.mainToolbar.setSubtitle(subTitile);
                 }
             };
 
@@ -67,7 +69,10 @@ public class MainActivity extends AppCompatActivity {
     private void fillTestFragments() {
         //根据位置ID列表依次创建Fragment
         for (String locationId : HttpHelper.LOCATION_IDS) {
-            mFragments.add(WeatherFragment.newInstance(locationId));
+            //mFragments.add(WeatherFragment.newInstance(locationId));
+            WeatherFragment wf = WeatherFragment.newInstance(locationId);
+            wf.setOnWeatherLoadedCallback(this);
+            mFragments.add(wf);
         }
 
         for (WeatherFragment f : mFragments) {
@@ -141,6 +146,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onWeatherLoaded() {
+        //TODO:触发标题更新
+        //取当前页面序号
+        int position = mViewPager.getCurrentItem();
+        //直接触发页面切换事件，促使其更新标题
+        mOnPageChangeCallback.onPageSelected(position);
     }
 
     //ViewPager适配器类

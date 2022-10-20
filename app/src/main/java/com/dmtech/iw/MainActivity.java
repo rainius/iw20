@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -135,13 +136,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_item_add) { //判定是否点击添加图标
-            //TODO: 输出Snackbar消息
             Snackbar.make(mBinding.mainView.getRoot(),
                     "增加新位置",
                     Snackbar.LENGTH_SHORT)
                     .show();
-            //TODO: 输出日志
             Log.d("iWeather", "增加新位置");
+            //启动搜索添加页面
+            Intent intent =
+                    new Intent(this, SearchAddActivity.class);
+            startActivity(intent);
             //防止被其它代码处理
             return true;
         }

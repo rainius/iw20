@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.dmtech.iw">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -17,9 +17,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".SearchAddActivity"
+            android:theme="@style/Theme.IWeather.ToolBar"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.IWeather.MainView"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.IWeather.MainView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

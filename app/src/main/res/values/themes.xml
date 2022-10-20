@@ -14,8 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
     <!-- 定义无Action Bar的主题风格 -->
-
-    <style name="Theme.IWeather.MainView" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.IWeather.ToolBar" parent="Theme.AppCompat.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/grey_900</item>
         <item name="colorPrimaryVariant">@color/grey_700</item>
@@ -24,6 +23,13 @@
         <item name="colorSecondary">@color/yellow_600</item>
         <item name="colorSecondaryVariant">@color/yellow_900</item>
         <item name="colorOnSecondary">@color/black</item>
+        <!-- 强调色 -->
+        <item name="colorAccent">@color/yellow_600</item>
+
+    </style>
+
+<!--    <style name="Theme.IWeather.MainView" parent="Theme.AppCompat.NoActionBar">-->
+    <style name="Theme.IWeather.MainView" parent="Theme.IWeather.ToolBar">
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/colorPanel</item>
         <!-- Customize your theme here. -->

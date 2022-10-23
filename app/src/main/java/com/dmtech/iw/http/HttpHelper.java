@@ -1,4 +1,9 @@
 package com.dmtech.iw.http;
+
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 // 网络访问助手
 public class HttpHelper {
     //用于测试的样例位置ID列表
@@ -15,10 +20,8 @@ public class HttpHelper {
             "https://free-api.heweather.net/s6/weather?location=%s&key=%s&lang=zh";
     // 和风天气KEY
     private static final String API_KEY = "8f33976d35974b88866e05b83993bc04";
-
     // 天气图标URL模板
     private static final String ICON_URL_FORMAT = "http://jingzbit.cn/iweather/icons/%s.png";
-
 
     //定义天气名字
     private static final String SUNNY = "sunny";    //晴
@@ -30,6 +33,14 @@ public class HttpHelper {
     private static final String BG_URL_FORMAT =
             "http://jingzbit.cn/iweather/background/%s.jpg";
 
+    // 位置搜索URL模板
+    private static final String SEARCH_LOCATION_URL_FORMAT =
+            "https://search.heweather.net/find?location=%s&key=%s&lang=zh";
+
+    // 生成特定关键词搜索URL
+    public static String getSearchLocationUrl(String keyword) {
+        return String.format(SEARCH_LOCATION_URL_FORMAT, keyword, API_KEY);
+    }
 
     /**
      * 为指定位置生成获取天气数据的URL
@@ -80,6 +91,21 @@ public class HttpHelper {
             name = SUNNY;
         }
         return String.format(BG_URL_FORMAT, name);
+    }
+
+    /**
+     * 通过OkHttp3访问网络服务
+     * @param url: 被访问网络服务的地址
+     * @param callback: 处理网络响应的回调对象
+     */
+    public static void requestByOkHttp3(String url, Callback callback) {
+        // 创建OkHttp客户端对象
+        OkHttpClient client = new OkHttpClient();
+        // 构建访问url的请求对象
+        Request.Builder builder = new Request.Builder();
+        Request request = builder.url(url).build();
+        //客户端发起请求，并将任务放入异步队列
+        client.newCall(request).enqueue(callback);
     }
 
 

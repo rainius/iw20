@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../../../layout/custom_preview.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.165" />
         <entry key="app/src/main/res/drawable/info_panel_gradient.xml" value="0.125" />
         <entry key="app/src/main/res/drawable/toolbar_gradient.xml" value="0.1" />

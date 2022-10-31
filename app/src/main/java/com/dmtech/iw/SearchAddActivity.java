@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.dmtech.iw.databinding.ActivitySearchAddBinding;
 import com.dmtech.iw.entity.Basic;
+import com.dmtech.iw.entity.BasicDao;
+import com.dmtech.iw.entity.DaoSession;
 import com.dmtech.iw.entity.SearchInfos;
 import com.dmtech.iw.entity.SearchResult;
 import com.dmtech.iw.http.HttpHelper;
@@ -40,6 +42,8 @@ public class SearchAddActivity extends AppCompatActivity implements View.OnClick
     private ArrayAdapter<String> mAdapter;
     //搜索得到的位置名称列表
     private List<String> mLocationLabels;
+    //搜索得到的位置对象列表
+    private List<Basic> mLocations = new ArrayList<>();
 
     //控制任务延迟执行的Handler对象
     private Handler mHandler;
@@ -78,15 +82,17 @@ public class SearchAddActivity extends AppCompatActivity implements View.OnClick
                 Log.d("iWeather", "查询状态：" + searchInfos.getStatus());
                 //清空名字列表
                 mLocationLabels.clear();
+                mLocations.clear();
                 //当搜索成功时，用搜索到的结果重新填充名字列表
                 if ("ok".equals(searchInfos.getStatus())) {
                     Log.d("iWeather", "查询结果数目：" + searchInfos.getBasic().size());
-
                     for (Basic basic : searchInfos.getBasic()) {
                         //搜索的地点，国家，上级行政区
                         String label = basic.getLocation() + "，"
                                 + basic.getCnty()
                                 + basic.getAdmin_area();
+                        //加入到位置对象列表
+                        mLocations.add(basic);
                         //加入到名字列表
                         mLocationLabels.add(label);
                     }
@@ -154,10 +160,25 @@ public class SearchAddActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //在此处理列表项的点击
-                TextView textView = (TextView) view;
-                Log.d("iWeather", "你选中了：" + textView.getText());
+                //根据点击项的序号获取对应的位置信息对象
+                Basic location = mLocations.get(i);
+                Log.d("iWeather", "选中的位置是：" + location.getCid());
+                saveBasic(location);
             }
         });
+    }
+
+    //将位置基本信息存储到数据库
+    private void saveBasic(Basic location) {
+        IWeatherApp app = (IWeatherApp) getApplication();
+        // 从应用程序对象获得数据库会话对象
+        DaoSession session = app.getDaoSession();
+        //取得数据访问对象
+        BasicDao dao = session.getBasicDao();
+        //插入数据库
+        long id = dao.insert(location);
+        Log.d("iWeather", "新位置记录已保存：" + id);
+        Log.d("iWeather", "位置对象已获得ID：" + location.getId());
     }
 
     @Override

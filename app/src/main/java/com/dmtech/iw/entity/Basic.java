@@ -3,13 +3,29 @@
   */
 package com.dmtech.iw.entity;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Auto-generated: 2022-09-24 16:53:17
  *
  * @author bejson.com (i@bejson.com)
  * @website http://www.bejson.com/java2pojo/
  */
+@Entity
 public class Basic {
+
+    @Id
+    private Long id;    //数据表中记录的ID
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     private String cid;
     private String location;
@@ -19,6 +35,25 @@ public class Basic {
     private String lat;
     private String lon;
     private String tz;
+
+    @Generated(hash = 486223695)
+    public Basic(Long id, String cid, String location, String parent_city,
+            String admin_area, String cnty, String lat, String lon, String tz) {
+        this.id = id;
+        this.cid = cid;
+        this.location = location;
+        this.parent_city = parent_city;
+        this.admin_area = admin_area;
+        this.cnty = cnty;
+        this.lat = lat;
+        this.lon = lon;
+        this.tz = tz;
+    }
+
+    @Generated(hash = 414549035)
+    public Basic() {
+    }
+
     public void setCid(String cid) {
          this.cid = cid;
      }

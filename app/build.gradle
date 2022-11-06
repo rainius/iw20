@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.greenrobot.greendao'    //使用插件
 }
 
 android {
@@ -47,4 +48,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.1'
     // 引入Glide组件
     implementation 'com.github.bumptech.glide:glide:4.13.2'
+    // 引入GreenDao组件
+    implementation 'org.greenrobot:greendao:3.3.0'
 }

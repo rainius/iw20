@@ -21,7 +21,7 @@ public class HttpHelper {
     // 和风天气KEY
     private static final String API_KEY = "8f33976d35974b88866e05b83993bc04";
     // 天气图标URL模板
-    private static final String ICON_URL_FORMAT = "http://jingzbit.cn/iweather/icons/%s.png";
+    private static final String ICON_URL_FORMAT = "http://182.92.0.47/iweather/icons/%s.png";
 
     //定义天气名字
     private static final String SUNNY = "sunny";    //晴
@@ -31,7 +31,7 @@ public class HttpHelper {
     private static final String SNOWY = "snowy";    //雪
     //定义天气背景图URL模板
     private static final String BG_URL_FORMAT =
-            "http://jingzbit.cn/iweather/background/%s.jpg";
+            "http://182.92.0.47/iweather/background/%s.jpg";
 
     // 位置搜索URL模板
     private static final String SEARCH_LOCATION_URL_FORMAT =

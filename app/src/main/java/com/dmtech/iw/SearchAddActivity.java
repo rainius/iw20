@@ -21,8 +21,11 @@ import com.dmtech.iw.entity.BasicDao;
 import com.dmtech.iw.entity.DaoSession;
 import com.dmtech.iw.entity.SearchInfos;
 import com.dmtech.iw.entity.SearchResult;
+import com.dmtech.iw.event.MessageEvent;
 import com.dmtech.iw.http.HttpHelper;
 import com.google.gson.Gson;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -164,6 +167,8 @@ public class SearchAddActivity extends AppCompatActivity implements View.OnClick
                 Basic location = mLocations.get(i);
                 Log.d("iWeather", "选中的位置是：" + location.getCid());
                 saveBasic(location);
+                //选择位置后退出
+                onBackPressed();
             }
         });
     }
@@ -179,6 +184,8 @@ public class SearchAddActivity extends AppCompatActivity implements View.OnClick
         long id = dao.insert(location);
         Log.d("iWeather", "新位置记录已保存：" + id);
         Log.d("iWeather", "位置对象已获得ID：" + location.getId());
+        //发布数据库更新事件
+        EventBus.getDefault().post(new MessageEvent());
     }
 
     @Override

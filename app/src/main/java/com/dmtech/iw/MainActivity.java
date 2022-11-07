@@ -17,10 +17,16 @@ import android.view.MenuItem;
 
 import com.dmtech.iw.databinding.MainDrawerLayoutBinding;
 import com.dmtech.iw.entity.Basic;
+import com.dmtech.iw.entity.DaoSession;
 import com.dmtech.iw.entity.HeWeather6;
+import com.dmtech.iw.event.MessageEvent;
 import com.dmtech.iw.http.HttpHelper;
 import com.dmtech.iw.ui.WeatherFragment;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,16 +97,14 @@ public class MainActivity extends AppCompatActivity
         //将布局中的Toolbar设定为ActionBar
         setSupportActionBar(mBinding.mainView.mainToolbar);
         // 创建抽屉按钮
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mBinding.drawer,    //面向此抽屉
+        mDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawer,    //面向此抽屉
                 mBinding.mainView.mainToolbar,  //属于此工具栏
                 R.string.open,
                 R.string.close);
         // 使按钮监听抽屉状态（可以不经过抽屉按钮操作抽屉）
         mBinding.drawer.addDrawerListener(mDrawerToggle);
         //为Fragment列表填充测试数据
-        fillTestFragments();
+        //fillTestFragments();
         //获取ViewPager对象
         mViewPager = mBinding.mainView.viewpager;
         //创建适配器对象
@@ -109,9 +113,48 @@ public class MainActivity extends AppCompatActivity
         mViewPager.setAdapter(mAdapter);
         //注册监听回调
         mViewPager.registerOnPageChangeCallback(mOnPageChangeCallback);
+        //加载全部位置
+        loadLocationsToUI();
 
         //验证拼装获取某城市天气数据的API
         testHttpHelperGetUrl();
+        //注册成为EventBus订阅者
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //注销订阅
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        Log.d("iWeather", "数据库更新事件");
+        loadLocationsToUI();
+    }
+
+    private void loadLocationsToUI() {
+        //读取数据库中的位置集合
+        //获取数据库会话对象
+        DaoSession session =
+                ((IWeatherApp) getApplication()).getDaoSession();
+        //加载全部已添加的数据库记录
+        List<Basic> locations = session.getBasicDao().loadAll();
+        //清空现有Fragment列表
+        mFragments.clear();
+        //重建WeatherFragment列表
+        for (Basic location : locations) {
+            //依次创建WeatherFragment实例
+            WeatherFragment wf =
+                    WeatherFragment.newInstance(location.getCid());
+            wf.setOnWeatherLoadedCallback(this);    //设置回调
+            //加入列表
+            mFragments.add(wf);
+        }
+        //通知ViewPager刷新
+        mAdapter.notifyDataSetChanged();
     }
 
     private void testHttpHelperGetUrl() {

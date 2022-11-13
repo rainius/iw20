@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity
         //设定列表中要显示的位置
         public void setLocations(List<Basic> locations) {
             this.locations = locations;
+            Log.d("iWeather", "DrawerLocationsAdapter 获得新位置");
             //更新位置后刷新列表
             notifyDataSetChanged();
         }

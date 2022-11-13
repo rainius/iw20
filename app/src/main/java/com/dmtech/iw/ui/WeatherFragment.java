@@ -194,19 +194,19 @@ public class WeatherFragment extends Fragment {
                 //显示当前位置的上级行政区
                 Log.d("iWeather", "Weather: " + mWeather.getBasic().getAdmin_area());
                 //将控制权转回UI线程
-                FragmentActivity activity = getActivity();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mOnWeatherLoadedCallback != null) {
-                                mOnWeatherLoadedCallback.onWeatherLoaded();
-                            }
-                            //TODO: 在此更新UI数据
-                            bindWeatherToViews();
-                        }
-                    });
+                if (getActivity() == null) {
+                    return;
                 }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mOnWeatherLoadedCallback != null) {
+                            mOnWeatherLoadedCallback.onWeatherLoaded();
+                        }
+                        //TODO: 在此更新UI数据
+                        bindWeatherToViews();
+                    }
+                });
             }
         });
     }

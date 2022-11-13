@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -193,16 +194,19 @@ public class WeatherFragment extends Fragment {
                 //显示当前位置的上级行政区
                 Log.d("iWeather", "Weather: " + mWeather.getBasic().getAdmin_area());
                 //将控制权转回UI线程
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mOnWeatherLoadedCallback != null) {
-                            mOnWeatherLoadedCallback.onWeatherLoaded();
+                FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mOnWeatherLoadedCallback != null) {
+                                mOnWeatherLoadedCallback.onWeatherLoaded();
+                            }
+                            //TODO: 在此更新UI数据
+                            bindWeatherToViews();
                         }
-                        //TODO: 在此更新UI数据
-                        bindWeatherToViews();
-                    }
-                });
+                    });
+                }
             }
         });
     }

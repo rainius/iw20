@@ -6,15 +6,22 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
+import com.dmtech.iw.databinding.DrawerItemLayoutBinding;
 import com.dmtech.iw.databinding.MainDrawerLayoutBinding;
 import com.dmtech.iw.entity.Basic;
 import com.dmtech.iw.entity.DaoSession;
@@ -36,6 +43,8 @@ public class MainActivity extends AppCompatActivity
 
     //视图绑定对象
     MainDrawerLayoutBinding mBinding;
+    //抽屉位置列表适配器
+    private DrawerLocationsAdapter mDrawerLocatonsAdapter;
     //抽屉按钮对象
     private ActionBarDrawerToggle mDrawerToggle;
     // 存储各天气位置对应的fragment
@@ -69,6 +78,9 @@ public class MainActivity extends AppCompatActivity
                     //更新工具栏标题
                     mBinding.mainView.mainToolbar.setTitle(title);
                     mBinding.mainView.mainToolbar.setSubtitle(subTitile);
+
+                    //更新抽屉当前位置高亮
+                    mDrawerLocatonsAdapter.notifyDataSetChanged();
                 }
             };
 
@@ -113,6 +125,12 @@ public class MainActivity extends AppCompatActivity
         mViewPager.setAdapter(mAdapter);
         //注册监听回调
         mViewPager.registerOnPageChangeCallback(mOnPageChangeCallback);
+        //配置抽屉中的位置列表
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(this);
+        mBinding.drawerView.rvLocations.setLayoutManager(lm);
+        mDrawerLocatonsAdapter = new DrawerLocationsAdapter();
+        mBinding.drawerView.rvLocations.setAdapter(mDrawerLocatonsAdapter);
+
         //加载全部位置
         loadLocationsToUI();
 
@@ -142,6 +160,8 @@ public class MainActivity extends AppCompatActivity
                 ((IWeatherApp) getApplication()).getDaoSession();
         //加载全部已添加的数据库记录
         List<Basic> locations = session.getBasicDao().loadAll();
+        //刷新抽屉中的位置列表内容
+        mDrawerLocatonsAdapter.setLocations(locations);
         //清空现有Fragment列表
         mFragments.clear();
         //重建WeatherFragment列表
@@ -223,6 +243,81 @@ public class MainActivity extends AppCompatActivity
             return mFragments.size();
         }
     }
+
+    //抽屉RecyclerView适配器
+    private class DrawerLocationsAdapter extends RecyclerView.Adapter<DrawerItemHolder> {
+        //需要展示的位置列表
+        private List<Basic> locations = new ArrayList<>();
+        //设定列表中要显示的位置
+        public void setLocations(List<Basic> locations) {
+            this.locations = locations;
+            //更新位置后刷新列表
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public DrawerItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            //在此为条目创建视图容器对象
+            View itemView = getLayoutInflater().inflate(
+                    R.layout.drawer_item_layout, parent,false);
+            return new DrawerItemHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull DrawerItemHolder holder, int position) {
+            // 在此绑定条目数据内容
+            //获取条目对应的位置基本信息对象
+            Basic itemLocation = locations.get(position);
+            //设定当前位置名字
+            holder.itemBinding.tvLocation.setText(itemLocation.getLocation());
+            //高亮显示当前位置
+            int currItem = mViewPager.getCurrentItem();
+            if (position == currItem) {
+                holder.itemBinding.tvLocation.setTextColor(
+                        getResources().getColor(R.color.yellow_600));
+            } else {
+                holder.itemBinding.tvLocation.setTextColor(
+                        getResources().getColor(R.color.white));
+            }
+            //设定当前位置所述国家（地区）及行政区
+            String admin = itemLocation.getCnty() + "，" + itemLocation.getAdmin_area();
+            holder.itemBinding.tvAdmin.setText(admin);
+            //选择位置并使ViewPager跳转
+            holder.itemBinding.drawerItemContainer.setOnClickListener(
+                    new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //点击位置条目：切换主视图位置，然后关闭抽屉
+                    //ViewPager平滑滚动至所选位置
+                    mViewPager.setCurrentItem(
+                            holder.getAdapterPosition(),
+                            true);
+                    //抽屉关闭，并向左滑出
+                    mBinding.drawer.closeDrawer(Gravity.LEFT);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return locations.size();
+        }
+    }
+
+
+    //抽屉位置列表RecyclerView单项容器
+    private class DrawerItemHolder extends RecyclerView.ViewHolder {
+
+        DrawerItemLayoutBinding itemBinding;
+
+        public DrawerItemHolder(@NonNull View itemView) {
+            super(itemView);
+            //绑定到列表条目视图
+            itemBinding = DrawerItemLayoutBinding.bind(itemView);
+        }
+    }
+
 }
 
 
